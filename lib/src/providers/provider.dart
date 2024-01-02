@@ -18,6 +18,7 @@ abstract class Provider {
   Future<http.Response> getResponse(String url) async {
     return await http.Client().get(Uri.parse(url), headers: requiredHeaders);
   }
+
   Document parseResponse(String body) => parser.parse(body);
   Future<Document?> getDocumentOrNull(String url) async {
     var response = await getResponse(url);

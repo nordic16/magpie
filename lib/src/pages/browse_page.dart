@@ -12,9 +12,7 @@ class BrowsePage extends StatefulWidget {
 }
 
 class _BrowsePageState extends State<BrowsePage> {
-  List<Provider> providers = [
-    Mangapill()
-  ];
+  List<Provider> providers = [Mangapill()];
 
   @override
   Widget build(BuildContext context) {

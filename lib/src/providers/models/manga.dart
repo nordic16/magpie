@@ -22,7 +22,8 @@ class Manga {
   int? releaseYear;
   int? anilistId; // To be used in Anilist integration
 
-  Manga(this.name, this.sourceName, this.image, this.url, {this.description, this.releaseYear});
+  Manga(this.name, this.sourceName, this.image, this.url,
+      {this.description, this.releaseYear});
 
   @override
   String toString() {
