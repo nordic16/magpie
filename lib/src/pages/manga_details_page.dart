@@ -15,29 +15,35 @@ class MangaDetailsPage extends StatelessWidget {
         body: FutureBuilder<Manga>(
             future: provider.getMangaDetails(searchResult),
             builder: (BuildContext context, snapshot) {
+              List<Widget> children;
               if (snapshot.hasData) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Image.network(
-                      searchResult.image,
-                      headers: provider.requiredHeaders,
-                      height: 500,
-                    ),
-
-                    Text(
-                      searchResult.name,
-                      style: const TextStyle(
-                          fontSize: 36, fontWeight: FontWeight.bold),
-                    ),
-                    Flexible(child: Text(snapshot.data!.description!)),
+                children = <Widget>[
+                  Image.network(
+                    searchResult.image,
+                    headers: provider.requiredHeaders,
+                    height: 500,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.only(left: 10, bottom: 10),
+                          child: Text(
+                            searchResult.name,
+                            style: const TextStyle(
+                                fontSize: 36, fontWeight: FontWeight.bold),
+                          )),
+                      Text(snapshot.data!.description!, softWrap: true),
 // TODO
-                    const ElevatedButton(onPressed: null, child: Text("Read"))
-                  ],
-                );
+                      const ElevatedButton(onPressed: null, child: Text("Read"))
+                    ],
+                  )
+                ];
               } else {
                 return const CircularProgressIndicator(color: Colors.amber);
               }
+
+              return Row(children: children);
             }));
   }
 }
