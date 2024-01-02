@@ -4,10 +4,10 @@ import 'package:magpie/src/providers/models/manga.dart';
 import 'package:magpie/src/providers/provider.dart';
 
 class MangaCoverWidget extends StatelessWidget {
-  final Manga manga;
+  final SearchResult searchResult;
   final Provider provider;
 
-  const MangaCoverWidget(this.manga, this.provider, {super.key});
+  const MangaCoverWidget(this.searchResult, this.provider, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class MangaCoverWidget extends StatelessWidget {
             ),
             clipBehavior: Clip.antiAlias,
             child: Image.network(
-              manga.image,
+              searchResult.image,
               fit: BoxFit.cover,
               headers: provider.requiredHeaders,
             ),
@@ -51,7 +51,7 @@ class MangaCoverWidget extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(15),
               child: Text(
-                manga.name,
+                searchResult.name,
                 style: const TextStyle(
                   overflow: TextOverflow.ellipsis,
                   color: Colors.white,

@@ -79,9 +79,9 @@ class _ProviderActivityState extends State<ProviderActivity> {
     loadResults(widget.provider.search(query));
   }
 
-  void loadResults(Future<List<Manga>> future) {
+  void loadResults(Future<List<SearchResult>> future) {
     setState(() {
-      mangaResults = FutureBuilder<List<Manga>>(
+      mangaResults = FutureBuilder<List<SearchResult>>(
         future: future,
         builder:(context, snapshot) {
           if (snapshot.hasData) {

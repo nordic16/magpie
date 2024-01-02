@@ -1,10 +1,28 @@
-class Manga {
+class SearchResult {
   String name;
   String sourceName;
   String image;
   String url;
 
-  Manga(this.name, this.sourceName, this.image, this.url);
+  SearchResult(this.name, this.sourceName, this.image, this.url);
+
+  @override
+  String toString() {
+    return name;
+  }
+}
+
+class Manga {
+  String name;
+  String sourceName;
+  String image;
+  String url;
+  List<Chapter> chapters = [];
+  String? description;
+  int? releaseYear;
+  int? anilistId; // To be used in Anilist integration
+
+  Manga(this.name, this.sourceName, this.image, this.url, {this.description, this.releaseYear});
 
   @override
   String toString() {

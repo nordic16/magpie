@@ -15,90 +15,93 @@ class Mangapill extends Provider {
   Map<String, String> get requiredHeaders => {"Referer": baseUrl};
 
   @override
-  Future<List<Manga>> popular() async {
-    List<Manga> manga = [];
+  Future<List<SearchResult>> popular() async {
+    List<SearchResult> manga = [];
 
-    var response = await getResponse(baseUrl);
-    if (response.statusCode == 200) {
-      var document = parseResponse(response.body);
-      var resultsContainer = document.getElementsByClassName("grid grid-cols-2").firstOrNull;
-      if (resultsContainer == null) return [];
+    var document = await getDocumentOrNull(baseUrl);
+    if (document == null) return manga;
 
-      var results = resultsContainer.getElementsByTagName("div").where((element) => element.className == "");
-      for (var result in results) {
-        var name = result.getElementsByClassName("line-clamp-2 text-sm font-bold").first.innerHtml;
-        var image = result.getElementsByTagName("img").first.attributes["data-src"];
-        var path = result.getElementsByTagName("a").first.attributes["href"];
-        var url = "$baseUrl$path";
+    var resultsContainer = document.getElementsByClassName("grid grid-cols-2").firstOrNull;
+    if (resultsContainer == null) return manga;
 
-        manga.add(Manga(name, this.name, image!, url));
-      }
+    var results = resultsContainer.getElementsByTagName("div").where((element) => element.className == "");
+    for (var result in results) {
+      var name = result.getElementsByClassName("line-clamp-2 text-sm font-bold").first.innerHtml;
+      var image = result.getElementsByTagName("img").first.attributes["data-src"];
+      var path = result.getElementsByTagName("a").first.attributes["href"];
+      var url = "$baseUrl$path";
+
+      manga.add(SearchResult(name, this.name, image!, url));
     }
 
     return manga;
   }
 
   @override
-  Future<List<Manga>> search(String query) async {
-    List<Manga> manga = [];
+  Future<List<SearchResult>> search(String query) async {
+    List<SearchResult> manga = [];
 
-    var response = await getResponse(_searchUrl(query));
-    if (response.statusCode == 200) {
-      var document = parseResponse(response.body);
-      var resultsContainer = document.getElementsByClassName("my-3 grid justify-end gap-3 grid-cols-2").firstOrNull;
-      if (resultsContainer == null) return [];
+    var document = await getDocumentOrNull(_searchUrl(query));
+    if (document == null) return manga;
 
-      var results = resultsContainer.getElementsByTagName("div").where((element) => element.className == "");
-      for (var result in results) {
-        var name = result.getElementsByClassName("mt-3 font-black leading-tight line-clamp-2").first.innerHtml;
-        var image = result.getElementsByTagName("img").first.attributes["data-src"];
-        var path = result.getElementsByTagName("a").first.attributes["href"];
-        var url = "$baseUrl$path";
+    var resultsContainer = document.getElementsByClassName("my-3 grid justify-end gap-3 grid-cols-2").firstOrNull;
+    if (resultsContainer == null) return [];
 
-        manga.add(Manga(name, this.name, image!, url));
-      }
+    var results = resultsContainer.getElementsByTagName("div").where((element) => element.className == "");
+    for (var result in results) {
+      var name = result.getElementsByClassName("mt-3 font-black leading-tight line-clamp-2").first.innerHtml;
+      var image = result.getElementsByTagName("img").first.attributes["data-src"];
+      var path = result.getElementsByTagName("a").first.attributes["href"];
+      var url = "$baseUrl$path";
+
+      manga.add(SearchResult(name, this.name, image!, url));
     }
 
     return manga;
   }
 
   @override
-  Future<List<Chapter>> getChapters(Manga manga) async {
-    List<Chapter> chapters = [];
+  Future<Manga> getMangaDetails(SearchResult searchResult) async {
+    var manga = Manga(searchResult.name, searchResult.sourceName, searchResult.image, searchResult.url);
 
-    var response = await getResponse(manga.url);
-    if (response.statusCode == 200) {
-      var document = parseResponse(response.body);
-      var chaptersDiv = document.getElementsByClassName("my-3 grid grid-cols-1").firstOrNull;
-      if (chaptersDiv == null) return [];
+    var document = await getDocumentOrNull(searchResult.url);
+    if (document == null) return manga;
 
-      var results = chaptersDiv.getElementsByTagName("a").reversed;
-      for (var result in results) {
-        var name = result.innerHtml;
-        var path = result.attributes["href"];
-        var url = "$baseUrl$path";
+    var detailsDiv = document.getElementsByClassName("grid grid-cols-1 gap-3 mb-3").last;
+    var releaseYear = detailsDiv.children.last.children.lastOrNull?.innerHtml;
 
-        chapters.add(Chapter(name, url));
-      }
+    var description = document.getElementsByClassName("text-sm text--secondary").firstOrNull?.innerHtml;
+
+    manga.description = description;
+    manga.releaseYear = releaseYear == null ? null : int.parse(releaseYear);
+
+    var chaptersDiv = document.getElementsByClassName("my-3 grid grid-cols-1").firstOrNull;
+    if (chaptersDiv == null) return manga;
+
+    var results = chaptersDiv.getElementsByTagName("a").reversed;
+    for (var result in results) {
+      var name = result.innerHtml;
+      var path = result.attributes["href"];
+      var url = "$baseUrl$path";
+
+      manga.chapters.add(Chapter(name, url));
     }
 
-    return chapters;
+    return manga;
   }
 
   @override
   Future<List<Page>> getPages(Chapter chapter) async {
     List<Page> pages = [];
 
-    var response = await getResponse(chapter.url);
-    if (response.statusCode == 200) {
-      var document = parseResponse(response.body);
+    var document = await getDocumentOrNull(chapter.url);
+    if (document == null) return pages;
 
-      var results = document.getElementsByClassName("js-page");
-      for (var result in results) {
-        var url = result.attributes["data-src"];
+    var results = document.getElementsByClassName("js-page");
+    for (var result in results) {
+      var url = result.attributes["data-src"];
 
-        pages.add(Page(url!, headers: requiredHeaders));
-      }
+      pages.add(Page(url!, headers: requiredHeaders));
     }
 
     return pages;

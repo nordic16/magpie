@@ -28,11 +28,12 @@ void main() {
   // });
 
   test('Temp', () async {
+    // TODO: Add proper tests.
     var mpill = Mangapill();
     var results = await mpill.search("One Punch Man");
     var opm = results.first;
-    var chapters = await mpill.getChapters(opm);
-    var chapter = chapters.first;
+    var manga = await mpill.getMangaDetails(opm);
+    var chapter = manga.chapters.first;
     print(chapter.name);
     var pages = await mpill.getPages(chapter);
     print(pages);
