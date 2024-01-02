@@ -14,7 +14,7 @@ class MangaCoverWidget extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(8),
       onTap: () {
-        print("TODO: OPEN THE MANGA DETAIL PAGE...");
+        // TODO: OPEN THE MANGA DETAIL PAGE...
       },
       child: Stack(
         fit: StackFit.expand,

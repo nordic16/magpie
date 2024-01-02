@@ -34,8 +34,10 @@ void main() {
     var opm = results.first;
     var manga = await mpill.getMangaDetails(opm);
     var chapter = manga.chapters.first;
+    // ignore: avoid_print
     print(chapter.name);
     var pages = await mpill.getPages(chapter);
+    // ignore: avoid_print
     print(pages);
   });
 }
